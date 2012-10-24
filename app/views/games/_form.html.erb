@@ -14,15 +14,15 @@
 
   <div class="field">
     <%= f.label "Name:" %><br />
-    <%= f.text_field f.name %>
+    <%= f.text_field @game.name %>
   </div>
   <div class="field">
     <%= f.label "Own3d.tv Game ID:" %><br />
-    <%= f.text_field f.owned_game_id %>
+    <%= f.text_field @game.owned_game_id %>
   </div>
   <div class="field">
     <%= f.label "Twitch.tv Game ID:" %><br />
-    <%= f.text_field f.twitch_game_id %>
+    <%= f.text_field @game.twitch_game_id %>
   </div>
 
   <div class="actions">
