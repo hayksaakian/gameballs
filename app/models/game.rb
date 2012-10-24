@@ -1,4 +1,5 @@
 require 'net/http'
+require "net/https"
 require 'open-uri'
 require 'json'
 class Game
@@ -7,10 +8,10 @@ class Game
   has_many :viewstamps
   field :name, :type => String
   field :owned_name, :type => String
-  field :owned_game_id => String
-  field :twitch_game_id => String
-  field :current_viewers => Integer, :default => 0
-  field :current_channels => Integer, :default => 0
+  field :owned_game_id, :type => String
+  field :twitch_game_id, :type => String
+  field :current_viewers, :type => Integer, :default => 0
+  field :current_channels, :type => Integer, :default => 0
   #In this case, the own3d name has to be authoritative
 
   def self.update_counts
@@ -27,8 +28,13 @@ class Game
   end
   #both are class methods, not instance mathods
   def self.get_twitch(timestamp_guid)
-  	url = "https://api.twitch.tv/kraken/games/top?limit=75" 
-  	response = JSON.parse(Net::HTTP.get(url))
+  	url = URI.parse("https://api.twitch.tv/kraken/games/top?limit=75") 
+  	http = Net::HTTP.new(url.host, url.port)
+		http.use_ssl = true
+		http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+		request = Net::HTTP::Get.new(url.request_uri)
+  	response = JSON.parse(http.request(request).body)
+
   	top = response['top']
   	top.each do |gm|
   		raw_response = gm
@@ -49,8 +55,9 @@ class Game
   	end
   end
   def self.get_owned(timestamp_guid)
-  	url = "http://api.own3d.tv/rest/live/list.json?limit=1000"
-  	live_streams = JSON.parse(Net::HTTP.get(url))
+  	url = URI.parse("http://api.own3d.tv/rest/live/list.json?limit=1000")
+  	rsl = Net::HTTP.get(url)
+  	live_streams = JSON.parse(rsl)
   	idx = Ownedindex.first.name_to_id_map
   	games_already_checked = []
   	live_streams.each do |st|
@@ -61,8 +68,9 @@ class Game
 	  		if the_game.name == nil
 	  			the_game.update_attribute(:name, name)
 	  		end
-	  		gm_url = url+'&gameid='+owned_game_id
-		  	game_streamers = JSON.parse(Net::HTTP.get(gm_url))
+	  		gm_url = URI.parse('http://api.own3d.tv/rest/live/list.json?limit=1000&gameid='+owned_game_id.to_s)
+	  		gm_rsl = Net::HTTP.get(gm_url)
+		  	game_streamers = JSON.parse(gm_rsl)
 		  	vs = the_game.viewstamps.find_or_initialize_by(timestamp_guid: timestamp_guid)
 		  	game_streamers.each do |strmr|
 		  		vs.viewers += strmr['live_viewers']
