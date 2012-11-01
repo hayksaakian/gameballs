@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= content_for?(:title) ? yield(:title) : "GameBalls" %></title>
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="measuring the eyeballs on games">
+    <meta name="author" content="Hayk Saakian">
     <%= stylesheet_link_tag    "application", :media => "all" %>
     <%= javascript_include_tag "application" %>
     <%= csrf_meta_tags %>
+    <%= analytics_init if Rails.env.production? %>
     <%= yield(:head) %>
-</head>
-<body>
-
-
+  </head>
+  <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
       <nav class="navbar-inner">
         <div class="container">
-        	<div class='nav'>
-        		<span class='brand'><%= link_to_unless_current 'GameBalls', root_url %> - measuring the eyeballs on games</span>
-<!-- 						<ul class="nav">
+          <div class='nav'>
+						<span class='brand'><%= link_to_unless_current 'GameBalls', root_url %> - measuring the eyeballs on games</span>
+					<!-- 						<ul class="nav">
 							<li><a href='#'>a link</a><li>
 						</ul> -->
 					</div>
@@ -34,10 +33,12 @@
               <%= yield %>
             </div>
           </div>
-          <footer>
-          </footer>
         </div>
+          <footer>
+            <br>
+            by <%= link_to "Hayk Saakian", "http://twitter.com/hayksaakian" %>
+          </footer>
       </div> <!--! end of .container -->
     </div> <!--! end of #main -->
-</body>
+  </body>
 </html>
