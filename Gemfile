@@ -3,24 +3,16 @@ source 'https://rubygems.org'
 gem 'rails', '3.1.0'
 gem 'thin'
 
-gem "mongoid", "~> 2.4.0"
-gem "bson_ext", "1.6.2"
+gem "mongoid", "~> 3.0.0"
 gem "mongo"
-gem 'mongoid_fulltext', "~> 0.5"
-gem "will_paginate_mongoid", "~> 1.0.0"
-gem "will_paginate", "~> 3.0.3"
-gem 'bootstrap-will_paginate'
 
-gem "delayed_job", "~> 3.0.2"
-gem "delayed_job_mongoid", "~> 1.0.8"
+gem "delayed_job"
+gem "delayed_job_mongoid"
 gem "foreman"
 
-gem 'feedzirra'
-gem 'nokogiri'
-gem 'httparty'
-gem 'domainatrix', :require => 'domainatrix'
-
-gem 'geo_location'
+# gem 'nokogiri'
+# gem 'httparty'
+# gem 'domainatrix', :require => 'domainatrix'
 
 gem 'google-analytics-rails'
 

@@ -2,7 +2,7 @@ class GamesController < ApplicationController
   # GET /games
   # GET /games.json
   def index
-    @games = Game.order_by([:current_viewers , :desc])
+    @games = Game.order_by([:current_viewers , :desc]).limit(25)
 
     respond_to do |format|
       format.html # index.html.erb

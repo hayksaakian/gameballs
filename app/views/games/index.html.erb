@@ -1,14 +1,14 @@
-<h1>Listing games</h1>
-
 <table>
   <tr>
-    <th>Name</th>
+    <th>Game Name</th>
     <th>Recent Viewers</th>
     <th>- just Own3d</th>
     <th>- just Twitch</th>
     <th>Recent Channels</th>
     <th>- just Own3d</th>
     <th>- just Twitch</th>
+    <th>Own3d Name</th>
+    <th>Twitch Name</th>
     <th></th>
     <th></th>
     <th></th>
@@ -25,6 +25,8 @@
       <th><%= game.viewstamps.last.owned_channels %></th>
       <th><%= game.viewstamps.last.twitch_channels %></th>
     <% end %>
+    <th><%= game.owned_name %></th>
+    <th><%= game.twitch_name %></th>
     <td><%= link_to 'Show', game %></td>
     <td><%= link_to 'Edit', edit_game_path(game) %></td>
     <td><%= link_to 'Destroy', game, confirm: 'Are you sure?', method: :delete %></td>

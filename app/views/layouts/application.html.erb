@@ -7,11 +7,32 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-	<div>
-		<h1><%= link_to_unless_current 'GameBalls', root_url %> - measuring eyeballs for games</h1>
-	</div>
-	<hr>
-<%= yield %>
 
+
+    <header class="navbar navbar-inverse navbar-fixed-top">
+      <nav class="navbar-inner">
+        <div class="container">
+        	<div class='nav'>
+        		<span class='brand'><%= link_to_unless_current 'GameBalls', root_url %> - measuring the eyeballs on games</span>
+<!-- 						<ul class="nav">
+							<li><a href='#'>a link</a><li>
+						</ul> -->
+					</div>
+        </div>
+      </nav>
+    </header>
+    <div id="main" role="main">
+      <div class="container">
+        <div class="content">
+           <div class="row">
+            <div class="span12">
+              <%= yield %>
+            </div>
+          </div>
+          <footer>
+          </footer>
+        </div>
+      </div> <!--! end of .container -->
+    </div> <!--! end of #main -->
 </body>
 </html>

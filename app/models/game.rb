@@ -5,19 +5,23 @@ require 'json'
 class Game
   include Mongoid::Document
   include Mongoid::Timestamps
-  has_many :viewstamps
+  has_many :viewstamps, :dependent => :destroy
   field :name, :type => String
+  field :twitch_name, :type => String
   field :owned_name, :type => String
   field :owned_game_id, :type => String
   field :twitch_game_id, :type => String
   field :current_viewers, :type => Integer, :default => 0
   field :current_channels, :type => Integer, :default => 0
+  field :hidden, :type => Boolean, :default => true
   #In this case, the own3d name has to be authoritative
 
   def self.update_counts
   	guid = SecureRandom.uuid
   	Game.get_twitch(guid)
+    puts 'done with twitch'
   	Game.get_owned(guid)
+    puts 'done with own3d'
   	Game.all.each do |gm|
   		if gm.viewstamps.any?
 	  		gm.current_viewers = gm.viewstamps.last.viewers
@@ -28,7 +32,7 @@ class Game
   end
   #both are class methods, not instance mathods
   def self.get_twitch(timestamp_guid)
-  	url = URI.parse("https://api.twitch.tv/kraken/games/top?limit=75") 
+  	url = URI.parse("https://api.twitch.tv/kraken/games/top?limit=100") 
   	http = Net::HTTP.new(url.host, url.port)
 		http.use_ssl = true
 		http.verify_mode = OpenSSL::SSL::VERIFY_NONE
@@ -37,14 +41,28 @@ class Game
 
   	top = response['top']
   	top.each do |gm|
-  		raw_response = gm
   		name = gm['game']['name']
   		twitch_id = gm['game']['_id']
-  		viewers = gm['viewers']
-  		channels = gm['channels']
-  		the_game = Game.find_or_initialize_by(twitch_game_id: twitch_id)
+  		viewers = gm['viewers'].to_i
+  		channels = gm['channels'].to_i
+
+
+      #find games whose name starts with 'the_game_name'
+      re = Regexp.new(name, 'i')
+      games = Game.where(name: re)
+      #if none exist
+      if games.count == 0
+        #create one
+        the_game = Game.find_or_initialize_by(twitch_name: name)
+      else
+        #select the first one
+        the_game = games.first
+        if the_game.twitch_name == nil
+          the_game.twitch_name = name
+        end
+      end
   		if the_game.name == nil
-  			the_game.update_attribute(:name, name)
+  			the_game.name = name
   		end
   		vs = the_game.viewstamps.find_or_initialize_by(timestamp_guid: timestamp_guid)
   		vs.viewers += viewers
@@ -52,35 +70,45 @@ class Game
   		vs.twitch_viewers = viewers
   		vs.twitch_channels = channels
   		vs.save
+      the_game.save
   	end
   end
   def self.get_owned(timestamp_guid)
   	url = URI.parse("http://api.own3d.tv/rest/live/list.json?limit=1000")
   	rsl = Net::HTTP.get(url)
   	live_streams = JSON.parse(rsl)
-  	idx = Ownedindex.first.name_to_id_map
-  	games_already_checked = []
   	live_streams.each do |st|
-  		game_name = st['game_name']
-  		if not games_already_checked.include?(game_name)
-	  		owned_game_id = idx[game_name]
-	  		the_game = Game.find_or_initialize_by(owned_game_id: owned_game_id)
-	  		if the_game.name == nil
-	  			the_game.update_attribute(:name, name)
-	  		end
-	  		gm_url = URI.parse('http://api.own3d.tv/rest/live/list.json?limit=1000&gameid='+owned_game_id.to_s)
-	  		gm_rsl = Net::HTTP.get(gm_url)
-		  	game_streamers = JSON.parse(gm_rsl)
-		  	vs = the_game.viewstamps.find_or_initialize_by(timestamp_guid: timestamp_guid)
-		  	game_streamers.each do |strmr|
-		  		vs.viewers += strmr['live_viewers']
-		  		vs.owned_viewers += strmr['live_viewers']
-		  		vs.owned_channels += 1
-		  		vs.channels += 1
-		  	end
-		  	vs.save
-		  	games_already_checked.push(game_name)
-		  end
+      if st['game_name'] != nil
+        if st['game_name'] == 'Game'
+          puts 'wtf!'
+          puts st
+        end
+    		name = st['game_name']
+        #find games whose name starts with 'the_game_name'
+        re = Regexp.new(name, 'i')
+        games = Game.where(name: re)
+        #if none exist
+        if games.count == 0
+          #create one
+      		the_game = Game.find_or_initialize_by(owned_name: name)
+        else
+          #select the first one
+          the_game = games.first
+          if the_game.owned_name == nil
+            the_game.owned_name = name
+          end
+        end
+        if the_game.name == nil
+          the_game.name = name
+        end
+  	  	vs = the_game.viewstamps.find_or_initialize_by(timestamp_guid: timestamp_guid)
+    		vs.viewers += st['live_viewers'].to_i
+    		vs.owned_viewers += st['live_viewers'].to_i
+    		vs.owned_channels += 1
+    		vs.channels += 1
+  	  	vs.save
+        the_game.save
+      end
   	end
 	end
 end
