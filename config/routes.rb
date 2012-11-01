@@ -1,5 +1,6 @@
 Gameballs::Application.routes.draw do
   resources :games
+  get 'update_counts' => 'games#update_counts'
   root :to => 'games#index'
 
   # The priority is based upon order of creation:

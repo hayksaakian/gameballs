@@ -1,4 +1,13 @@
 class GamesController < ApplicationController
+
+  def update_counts
+    #move to delayed method
+    Game.update_counts
+    respond_to do |format|
+      format.html { redirect_to root_url, notice: 'Reloading viewer counts' }
+    end
+  end
+
   # GET /games
   # GET /games.json
   def index
