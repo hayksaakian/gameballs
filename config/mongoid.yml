@@ -3,7 +3,6 @@ production:
   sessions:
     default:
       uri: <%= ENV['MONGOLAB_URI'] %>
-      database: gameballs_prod
 development:
   # Configure available database sessions. (required)
   sessions:
