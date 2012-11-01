@@ -1,10 +1,11 @@
 # set these environment variables on your prod server
-production:
+production:   
   sessions:
     default:
-      hosts: 
-        - <%= ENV['MONGOLAB_URI'] %>
-      database: gameballs_prod
+      uri: <%= ENV['MONGOLAB_URL'] %>
+      options:
+        skip_version_check: true
+        safe: true
 development:
   # Configure available database sessions. (required)
   sessions:
