@@ -1,3 +1,12 @@
+# set these environment variables on your prod server
+production:
+  uri: <%= ENV['MONGOLAB_URI'] %>
+  database: gameballs_prod
+  # slaves: khghjghj
+  #   - host: slave1.local
+  #     port: 27018
+  #   - host: slave2.local
+  #     port: 27019
 development:
   # Configure available database sessions. (required)
   sessions:
