@@ -1,4 +1,4 @@
-<p>Graphs coming soon... (by nov. 5). Numbers updated <%= time_ago_in_words(Viewstamp.last.created_at) %> ago</p>
+<small>Numbers updated <%= time_ago_in_words(Viewstamp.last.created_at) %> ago</small>
 
 <div style='width: 900px;' id="graphdiv"></div>
 <% 
@@ -8,7 +8,7 @@
   elsif min_rows < 10
     min_rows = 10
   end
-  gs = @games.limit(5)
+  gs = @games.limit(10)
   jsn = {}
   gs.each do |g| 
     col = []
@@ -50,7 +50,11 @@
     document.getElementById("graphdiv"),
 
     // CSV or path to a CSV file.
-    data
+    data,
+    {
+      rollPeriod: 7,
+      showRoller: true
+    }
 
   );
 </script>
