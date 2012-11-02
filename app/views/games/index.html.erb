@@ -1,17 +1,56 @@
 <p>Graphs coming soon... (by nov. 5). Numbers updated <%= time_ago_in_words(Viewstamp.last.created_at) %> ago</p>
 
-<div id="graphdiv"></div>
+<div style='width: 900px;' id="graphdiv"></div>
+<% 
+  min_rows = @games.first.viewstamps.count
+  if min_rows > 50
+    min_rows = 50;
+  elsif min_rows < 10
+    min_rows = 10
+  end
+  gs = @games.limit(5)
+  jsn = {}
+  gs.each do |g| 
+    col = []
+    viewstamps = g.viewstamps.order_by([:created_at, :desc]).limit(min_rows)
+    if jsn['Date'] == nil
+      jsn['Date'] = []
+      viewstamps.each do |vs|
+        jsn['Date'].push(vs.created_at)
+      end
+    end
+    viewstamps.each do |vs|
+      col.push(vs.viewers)
+    end
+    jsn[g.name] = col
+  end  
+  g_names = jsn.keys.join(',')
+  rows_arr = [g_names]
+  counter = 0
+  no_games = jsn.keys.length - 1
+  #do this as many times as there are rows
+  jsn['Date'].length.times do
+    rs = []
+    #do this for each column
+    jsn.values.each do |cl|
+      rs.push(cl[counter])
+    end
+    counter += 1
+    rows_arr.push(rs.join(','))
+  end
+  data = rows_arr.join('\n')
+%>
 <script type="text/javascript">
-  g = new Dygraph(
 
+  var min_rows = '<%= min_rows %>';
+  var data = '<%= data %>';
+
+  g = new Dygraph(
     // containing div
     document.getElementById("graphdiv"),
 
     // CSV or path to a CSV file.
-    "Date,Temperature\n" +
-    "2008-05-07,75\n" +
-    "2008-05-08,70\n" +
-    "2008-05-09,80\n"
+    data
 
   );
 </script>
