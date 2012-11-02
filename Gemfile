@@ -23,6 +23,7 @@ gem 'google-analytics-rails'
 # #gem 'imgkit'
 
 gem 'bootstrap-sass'
+gem 'dygraphs-rails'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'

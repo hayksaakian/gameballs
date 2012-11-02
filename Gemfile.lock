@@ -49,6 +49,7 @@ GEM
     delayed_job_mongoid (2.0.0)
       delayed_job (~> 3.0)
       mongoid (~> 3.0)
+    dygraphs-rails (0.0.1)
     erubis (2.7.0)
     eventmachine (1.0.0)
     excon (0.16.7)
@@ -153,6 +154,7 @@ DEPENDENCIES
   coffee-rails (~> 3.1.0)
   delayed_job
   delayed_job_mongoid
+  dygraphs-rails
   foreman
   google-analytics-rails
   heroku
