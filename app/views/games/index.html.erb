@@ -1,18 +1,18 @@
+<div style='width: 100%;' id="graphdiv"></div>
 <small>Numbers updated <%= time_ago_in_words(Viewstamp.last.created_at) %> ago</small>
-
-<div style='width: 900px;' id="graphdiv"></div>
 <% 
-  min_rows = @games.first.viewstamps.count
+  gs = @games.limit(10)
+  min_rows = gs[0].viewstamps.count
   if min_rows > 50
     min_rows = 50;
   elsif min_rows < 10
     min_rows = 10
   end
-  gs = @games.limit(10)
   jsn = {}
   gs.each do |g| 
     col = []
-    viewstamps = g.viewstamps.order_by([:created_at, :desc]).limit(min_rows)
+    viewstamps = g.viewstamps.where(:created_at.gte => 1.day.ago)
+    viewstamps = viewstamps.order_by([:created_at, :desc]).limit(min_rows)
     if jsn['Date'] == nil
       jsn['Date'] = []
       viewstamps.each do |vs|
@@ -22,7 +22,7 @@
     viewstamps.each do |vs|
       col.push(vs.viewers)
     end
-    jsn[g.name] = col
+    jsn[escape_javascript(g.name)] = col
   end  
   g_names = jsn.keys.join(',')
   rows_arr = [g_names]
@@ -52,8 +52,8 @@
     // CSV or path to a CSV file.
     data,
     {
-      rollPeriod: 7,
-      showRoller: true
+      rollPeriod: 1,
+      showRoller: false
     }
 
   );

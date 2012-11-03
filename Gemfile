@@ -6,6 +6,8 @@ gem 'thin'
 
 gem "mongoid", "~> 3.0.0"
 gem "mongo"
+#added to make it stop bitching:
+gem "bson_ext"
 
 gem "delayed_job"
 gem "delayed_job_mongoid"

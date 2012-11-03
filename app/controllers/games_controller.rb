@@ -1,5 +1,20 @@
 class GamesController < ApplicationController
 
+  def genres
+    genre_names = params[:genre_names]
+    if genre_names != nil
+      @genre = Genre.find_by(name: genre_names)
+      @games = @genre.games
+    else
+      @games = Game.all
+    end
+    @games = @games.where(:last_update.gte => 3.days.ago)
+    @games = @games.order_by([:current_viewers , :desc]) 
+    @genres = Genre.where(:games_count.ne => 0)  
+    @genres = @genres.order_by([:games_count, :desc])
+    puts @genres.count
+  end
+
   def update_counts
     #move to delayed method
     Game.update_counts
@@ -11,7 +26,9 @@ class GamesController < ApplicationController
   # GET /games
   # GET /games.json
   def index
-    @games = Game.order_by([:current_viewers , :desc]).limit(25)
+    most_recent = Game.max(:last_update)
+    @games = Game.where(:last_update.gte => 1.hour.ago)
+    @games = @games.order_by([:current_viewers , :desc]).limit(25)
 
     respond_to do |format|
       format.html # index.html.erb

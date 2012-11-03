@@ -1,0 +1,59 @@
+<script type="text/javascript">
+		//things
+</script>
+<div class='row'>
+	<div class='span2'>
+		<ul class="nav nav-list">
+		  <li class="nav-header">Genres</li>
+		  <li id='all'><a href="#"><%= Game.where(:current_viewers.gt => 0).count %> - All</a></li>
+		  <% @genres.each do |gnr| %>
+		  	<li id='<%= gnr.name %>'>
+		  		<a href="<%#= genre_path(gnr.name) %>">
+		  			<%= gnr.games.count %> - <%= gnr.name %>
+					</a>
+		  	</li>
+		  <% end %>
+		</ul>
+	  <script type="text/javascript">
+	  	var active_genre = '<%= params[:genre_names] %>';
+	  	if(active_genre != null){
+	  		$('#'+active_genre).addClass('active');
+	  	}else{
+	  		$('#all').insertClass('active');
+	  	}
+	  	console.log(active_genre);
+	  </script>
+	</div>
+	<div class='span10'>
+		<ul class="thumbnails">
+			<% @games.each do |game| %>
+				  <li class="span2">
+				  	<div class="thumbnail">
+					  	<a href="http://twitch.tv/directory/game/<%= URI.encode(game.name) %>">
+						      <img src="<%= game.boxart_url %>" alt="<%= game.name %>">
+				    	</a>
+				      <div style='height: 44px;'>
+					      <h5><%= game.name %></h5>
+							</div>
+				      <small><%= game.current_viewers %> viewers | <%= game.current_channels %> channels</small>
+				  	</div>
+				  </li>
+			<% end %>
+		</ul>
+	</div>
+</div>
+
+<br>
+<!-- 
+giantbomb api key
+569f949a9144b175988ed3179acde3139464a4eb
+
+get genres of a game
+http://api.giantbomb.com/game/24024/?format=json&field_list=genres&api_key=569f949a9144b175988ed3179acde3139464a4eb
+
+genre 
+has_and_belongs_to_many games
+
+game
+has_and_belongs_to_many genres
+ -->

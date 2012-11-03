@@ -5,30 +5,40 @@ require 'json'
 class Game
   include Mongoid::Document
   include Mongoid::Timestamps
+  has_and_belongs_to_many :genres
   has_many :viewstamps, :dependent => :destroy
   field :name, :type => String
+  field :giantbomb_id, :type => String
+  field :boxart_url, :type => String
+  field :live, :type => String
   field :twitch_name, :type => String
   field :owned_name, :type => String
   field :owned_game_id, :type => String
   field :twitch_game_id, :type => String
   field :current_viewers, :type => Integer, :default => 0
   field :current_channels, :type => Integer, :default => 0
-  field :hidden, :type => Boolean, :default => true
-  #In this case, the own3d name has to be authoritative
+  field :last_update, :type => DateTime
 
   def self.update_counts
+    Game.each do |gm|
+      gm.current_viewers = 0
+      gm.current_channels = 0
+      gm.save
+    end
   	guid = SecureRandom.uuid
   	Game.get_twitch(guid)
     puts 'done with twitch'
   	Game.get_owned(guid)
     puts 'done with own3d'
-  	Game.all.each do |gm|
-  		if gm.viewstamps.any?
-	  		gm.current_viewers = gm.viewstamps.last.viewers
-	  		gm.current_channels = gm.viewstamps.last.channels
-	  		gm.save
-	  	end
+    vss = Viewstamp.where(:created_at.gte => 30.minutes.ago)
+  	vss.each do |vs|
+  		vs.game.update_attribute(:current_viewers, vs.viewers)
+      vs.game.update_attribute(:current_channels, vs.channels)
 	  end
+    puts 'done updating current viewers and channels'
+    Genre.update_all_games_counts
+    puts 'done updating (all genreses) games counts'
+    puts 'totally done'
   end
   #both are class methods, not instance mathods
   def self.get_twitch(timestamp_guid)
@@ -57,20 +67,40 @@ class Game
       else
         #select the first one
         the_game = games.first
-        if the_game.twitch_name == nil
-          the_game.twitch_name = name
-        end
+        the_game.twitch_name = name
       end
   		if the_game.name == nil
   			the_game.name = name
   		end
+      if the_game.giantbomb_id == nil
+        the_game.giantbomb_id = gm['game']['giantbomb_id']
+      end
+      if the_game.boxart_url == nil
+        the_game.boxart_url = gm['game']['box']['medium']
+      end
   		vs = the_game.viewstamps.find_or_initialize_by(timestamp_guid: timestamp_guid)
   		vs.viewers += viewers
   		vs.channels += channels
   		vs.twitch_viewers = viewers
   		vs.twitch_channels = channels
   		vs.save
+      the_game.last_update = vs.created_at
       the_game.save
+      if the_game.genres.any? == false and the_game.giantbomb_id != nil
+        puts the_game.giantbomb_id
+        gn_uri = 'http://api.giantbomb.com/game/'+the_game.giantbomb_id+'/?format=json&field_list=genres&api_key=569f949a9144b175988ed3179acde3139464a4eb'
+        gn_url = URI.parse(gn_uri)
+        gn_rsl = Net::HTTP.get(gn_url)
+        gn_response = JSON.parse(gn_rsl)
+        if gn_response['error'] == 'OK'
+          gn_response['results']['genres'].each do |gn|
+            the_gn = Genre.find_or_initialize_by(name: gn['name'])
+            the_gn.giantbomb_id = gn['id']
+            the_gn.save
+            the_gn.games.push(the_game)
+          end
+        end
+      end
   	end
   end
   def self.get_owned(timestamp_guid)
@@ -107,6 +137,7 @@ class Game
     		vs.owned_channels += 1
     		vs.channels += 1
   	  	vs.save
+        the_game.last_update = vs.created_at
         the_game.save
       end
   	end

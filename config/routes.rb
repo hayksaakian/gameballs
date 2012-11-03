@@ -1,5 +1,7 @@
 Gameballs::Application.routes.draw do
   resources :games
+  get 'genres' => 'games#genres'
+  get 'genre/:genre_names' => 'games#genres', :as => 'genre'
   get 'update_counts' => 'games#update_counts'
   root :to => 'games#index'
 
