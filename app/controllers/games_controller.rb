@@ -27,7 +27,7 @@ class GamesController < ApplicationController
   # GET /games.json
   def index
     most_recent = Game.max(:last_update)
-    @games = Game.where(:last_update.gte => 1.hour.ago)
+    @games = Game.where(:last_update.gte => 3.hours.ago)
     @games = @games.order_by([:current_viewers , :desc]).limit(25)
 
     respond_to do |format|

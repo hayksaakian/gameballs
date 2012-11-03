@@ -69,9 +69,9 @@
     <th>- just Twitch</th>
     <th>Own3d Name</th>
     <th>Twitch Name</th>
+<!--     <th></th>
     <th></th>
-    <th></th>
-    <th></th>
+    <th></th> -->
   </tr>
 
 <% @games.each do |game| %>
@@ -87,9 +87,9 @@
     <% end %>
     <th><%= game.owned_name %></th>
     <th><%= game.twitch_name %></th>
-    <td><%= link_to 'Show', game %></td>
-    <td><%= link_to 'Edit', edit_game_path(game) %></td>
-    <td><%= link_to 'Destroy', game, confirm: 'Are you sure?', method: :delete %></td>
+<!--     <td><%#= link_to 'Show', game %></td>
+    <td><%#= link_to 'Edit', edit_game_path(game) %></td>
+    <td><%#= link_to 'Destroy', game, confirm: 'Are you sure?', method: :delete %></td> -->
   </tr>
 <% end %>
 </table>
