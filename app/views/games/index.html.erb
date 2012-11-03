@@ -11,7 +11,7 @@
   jsn = {}
   gs.each do |g| 
     col = []
-    viewstamps = g.viewstamps.where(:created_at.gte => 1.day.ago)
+    viewstamps = g.viewstamps.where(:created_at.gte => 5.days.ago)
     viewstamps = viewstamps.order_by([:created_at, :desc]).limit(min_rows)
     if jsn['Date'] == nil
       jsn['Date'] = []
