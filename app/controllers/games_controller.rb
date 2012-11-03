@@ -1,18 +1,18 @@
 class GamesController < ApplicationController
 
   def genres
-    genre_names = params[:genre_names]
-    if genre_names != nil
-      @genre = Genre.find_by(name: genre_names)
+    genre_id = params[:genre_id]
+    if genre_id != nil
+      @genre = Genre.find_by(giantbomb_id: genre_id)
       @games = @genre.games
     else
       @games = Game.all
     end
+    @games = @games.where(:current_viewers.gt => 0)
     @games = @games.where(:last_update.gte => 3.days.ago)
     @games = @games.order_by([:current_viewers , :desc]) 
     @genres = Genre.where(:games_count.ne => 0)  
     @genres = @genres.order_by([:games_count, :desc])
-    puts @genres.count
   end
 
   def update_counts
