@@ -23,7 +23,7 @@
 <div class='row-fluid'>	
 	<ul class="thumbnails">
 		<% @games.each do |game| %>
-		  <li class='span3'>
+		  <li class='span2'>
 		  	<div class="thumbnail">
 			  	<a href="http://twitch.tv/directory/game/<%= URI.encode(game.name) %>">
 				      <img src="<%= game.boxart_url %>" alt="<%= game.name %>">
