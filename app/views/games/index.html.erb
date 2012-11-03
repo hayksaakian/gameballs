@@ -58,40 +58,43 @@
 
   );
 </script>
-<table>
-  <tr>
-    <th>Game Name</th>
-    <th>Recent Viewers</th>
-    <th>- just Own3d</th>
-    <th>- just Twitch</th>
-    <th>Recent Channels</th>
-    <th>- just Own3d</th>
-    <th>- just Twitch</th>
-    <th>Own3d Name</th>
-    <th>Twitch Name</th>
-<!--     <th></th>
-    <th></th>
-    <th></th> -->
-  </tr>
-
+<table class='table table-striped table-bordered table-hover table-condensed'>
+  <thead class='info'>
+    <tr>
+      <th>Game Name</th>
+      <th>Recent Viewers</th>
+      <th>- just Own3d</th>
+      <th>- just Twitch</th>
+      <th>Recent Channels</th>
+      <th>- just Own3d</th>
+      <th>- just Twitch</th>
+      <th>Own3d Name</th>
+      <th>Twitch Name</th>
+  <!--     <th></th>
+      <th></th>
+      <th></th> -->
+    </tr>
+  </thead>
+<tbody>
 <% @games.each do |game| %>
   <tr>
     <td><%= game.name %></td>
     <% if game.viewstamps.any? %>
-      <th><%= game.viewstamps.last.viewers %></th>
-      <th><%= game.viewstamps.last.owned_viewers %></th>
-      <th><%= game.viewstamps.last.twitch_viewers %></th>
-      <th><%= game.viewstamps.last.channels %></th>
-      <th><%= game.viewstamps.last.owned_channels %></th>
-      <th><%= game.viewstamps.last.twitch_channels %></th>
+      <td><%= game.viewstamps.last.viewers %></td>
+      <td><%= game.viewstamps.last.owned_viewers %></td>
+      <td><%= game.viewstamps.last.twitch_viewers %></td>
+      <td><%= game.viewstamps.last.channels %></td>
+      <td><%= game.viewstamps.last.owned_channels %></td>
+      <td><%= game.viewstamps.last.twitch_channels %></td>
     <% end %>
-    <th><%= game.owned_name %></th>
-    <th><%= game.twitch_name %></th>
+    <td><%= game.owned_name %></td>
+    <td><%= game.twitch_name %></td>
 <!--     <td><%#= link_to 'Show', game %></td>
-    <td><%#= link_to 'Edit', edit_game_path(game) %></td>
-    <td><%#= link_to 'Destroy', game, confirm: 'Are you sure?', method: :delete %></td> -->
+    <td><%#= link_to 'Edit', edit_game_patd(game) %></td>
+    <td><%#= link_to 'Destroy', game, confirm: 'Are you sure?', metdod: :delete %></td> -->
   </tr>
 <% end %>
+</tbody>
 </table>
 
 <br />
