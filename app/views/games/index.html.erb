@@ -1,61 +1,17 @@
 <div style='width: 100%;' id="graphdiv"></div>
 <small>Numbers updated <%= time_ago_in_words(Viewstamp.last.created_at) %> ago</small>
-<% 
-  gs = @games.limit(10)
-  min_rows = gs[0].viewstamps.count
-  if min_rows > 50
-    min_rows = 50;
-  elsif min_rows < 10
-    min_rows = 10
-  end
-  jsn = {}
-  gs.each do |g| 
-    col = []
-    viewstamps = g.viewstamps.where(:created_at.gte => 5.days.ago)
-    viewstamps = viewstamps.order_by([:created_at, :desc]).limit(min_rows)
-    if jsn['Date'] == nil
-      jsn['Date'] = []
-      viewstamps.each do |vs|
-        jsn['Date'].push(vs.created_at)
-      end
-    end
-    viewstamps.each do |vs|
-      col.push(vs.viewers)
-    end
-    jsn[escape_javascript(g.name)] = col
-  end  
-  g_names = jsn.keys.join(',')
-  rows_arr = [g_names]
-  counter = 0
-  no_games = jsn.keys.length - 1
-  #do this as many times as there are rows
-  jsn['Date'].length.times do
-    rs = []
-    #do this for each column
-    jsn.values.each do |cl|
-      rs.push(cl[counter])
-    end
-    counter += 1
-    rows_arr.push(rs.join(','))
-  end
-  data = rows_arr.join('\n')
-%>
 <script type="text/javascript">
-
-  var min_rows = '<%= min_rows %>';
-  var data = '<%= data %>';
-
+  var min_rows = '<%= @min_rows %>';
+  var graph_data = '<%= @graph_data %>';
   g = new Dygraph(
     // containing div
     document.getElementById("graphdiv"),
-
     // CSV or path to a CSV file.
-    data,
+    graph_data,
     {
       rollPeriod: 1,
       showRoller: false
     }
-
   );
 </script>
 <table class='table table-striped table-bordered table-hover table-condensed'>

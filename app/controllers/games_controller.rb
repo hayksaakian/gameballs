@@ -1,4 +1,5 @@
 class GamesController < ApplicationController
+  include ActionView::Helpers::JavaScriptHelper
 
   def genres
     genre_id = params[:genre_id]
@@ -27,8 +28,46 @@ class GamesController < ApplicationController
   # GET /games.json
   def index
     most_recent = Game.max(:last_update)
-    @games = Game.where(:last_update.gte => 3.hours.ago)
+    @games = Game.where(:last_update.gte => 3.weeks.ago)
     @games = @games.order_by([:current_viewers , :desc]).limit(25)
+    gs = @games.limit(10)
+    @min_rows = gs.first.viewstamps.count
+    if @min_rows > 50
+      @min_rows = 50;
+    elsif @min_rows < 10
+      @min_rows = 10
+    end
+    jsn = {}
+    gs.each do |g| 
+      col = []
+      viewstamps = g.viewstamps.where(:created_at.gte => 5.days.ago)
+      viewstamps = viewstamps.order_by([:created_at, :desc]).limit(@min_rows)
+      if jsn['Date'] == nil
+        jsn['Date'] = []
+        viewstamps.each do |vs|
+          jsn['Date'].push(vs.created_at)
+        end
+      end
+      viewstamps.each do |vs|
+        col.push(vs.viewers)
+      end
+      jsn[escape_javascript(g.name)] = col
+    end  
+    g_names = jsn.keys.join(',')
+    rows_arr = [g_names]
+    counter = 0
+    no_games = jsn.keys.length - 1
+    #do this as many times as there are rows
+    jsn['Date'].length.times do
+      rs = []
+      #do this for each column
+      jsn.values.each do |cl|
+        rs.push(cl[counter])
+      end
+      counter += 1
+      rows_arr.push(rs.join(','))
+    end
+    @graph_data = rows_arr.join('\n')
 
     respond_to do |format|
       format.html # index.html.erb
