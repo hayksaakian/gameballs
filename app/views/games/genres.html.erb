@@ -28,10 +28,12 @@
 			  	<a href="http://twitch.tv/directory/game/<%= URI.encode(game.name) %>">
 				      <img src="<%= game.boxart_url %>" alt="<%= game.name %>">
 		    	</a>
-		      <div style='height: 44px;'>
+		    	<div style='height: 44px;'>
 			      <h5><%= game.name %></h5>
 					</div>
+		      <%= link_to game do %>
 		      <small><%= game.current_viewers %> viewers | <%= game.current_channels %> channels</small>
+		      <% end %>
 		  	</div>
 		  </li>
 		<% end %>
