@@ -15,16 +15,14 @@
   <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
       <nav class="navbar-inner">
-        <div class="container">
-          <div class='nav'>
-						<span class='brand'><%= link_to_unless_current 'GameBalls', root_url %> - measuring the eyeballs on games</span>
-						<div class='pull-right'>
-							<ul class="nav">
-                <!-- <li><%#= link_to 'Update viewer counts',update_counts_path %></li> -->
-                <li><%= link_to 'Browse Games by Genre', genres_path %></li>
-							</ul>
-						</div>
-					</div>
+        <div class="container-fluid">
+          <span class='brand'><%= link_to_unless_current 'GameBalls', root_url %> - measuring the eyeballs on games</span>
+          <div class='pull-right'>
+            <ul class="nav">
+              <!-- <li><%#= link_to 'Update viewer counts',update_counts_path %></li> -->
+              <li><%= link_to 'Browse Games by Genre', genres_path %></li>
+            </ul>
+          </div>
         </div>
       </nav>
     </header>
