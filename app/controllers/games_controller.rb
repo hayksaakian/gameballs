@@ -27,21 +27,23 @@ class GamesController < ApplicationController
   # GET /games
   # GET /games.json
   def index
+    days_back = 7
+    if params[:days_back]
+      if params[:days_back].to_i != 0
+        days_back = params[:days_back].to_i
+      end
+    else
+      params[:days_back] = days_back.to_s
+    end
     most_recent = Game.max(:last_update)
-    @games = Game.where(:last_update.gte => 3.days.ago)
+    @games = Game.where(:last_update.gte => 5.days.ago)
     @games = @games.order_by([:current_viewers , :desc]).limit(25)
     gs = @games.limit(10)
-    @min_rows = gs.first.viewstamps.count
-    if @min_rows > 50
-      @min_rows = 50;
-    elsif @min_rows < 10
-      @min_rows = 10
-    end
     jsn = {}
-    gs.each do |g| 
+    gs.each do |g|
       col = []
-      viewstamps = g.viewstamps.where(:created_at.gte => 5.days.ago)
-      viewstamps = viewstamps.order_by([:created_at, :desc]).limit(@min_rows)
+      viewstamps = g.viewstamps.where(:created_at.gte => days_back.days.ago)
+      viewstamps = viewstamps.order_by([:created_at, :desc])
       if jsn['Date'] == nil
         jsn['Date'] = []
         viewstamps.each do |vs|
@@ -79,6 +81,43 @@ class GamesController < ApplicationController
   # GET /games/1.json
   def show
     @game = Game.find(params[:id])
+
+
+    days_back = 7
+    if params[:days_back]
+      if params[:days_back].to_i != 0
+        days_back = params[:days_back].to_i
+      end
+    else
+      params[:days_back] = days_back.to_s
+    end
+    jsn = {}
+    @viewstamps = @game.viewstamps.where(:created_at.gte => days_back.days.ago)
+    @viewstamps = @viewstamps.order_by([:created_at, :desc])
+    jsn['Date'] = []
+    @viewstamps.each do |vs|
+      jsn['Date'].push(vs.created_at)
+    end
+    col = []
+    @viewstamps.each do |vs|
+      col.push(vs.viewers)
+    end
+    jsn[escape_javascript(@game.name)] = col
+    g_names = jsn.keys.join(',')
+    rows_arr = [g_names]
+    counter = 0
+    no_games = jsn.keys.length - 1
+    #do this as many times as there are rows
+    jsn['Date'].length.times do
+      rs = []
+      #do this for each column
+      jsn.values.each do |cl|
+        rs.push(cl[counter])
+      end
+      counter += 1
+      rows_arr.push(rs.join(','))
+    end
+    @graph_data = rows_arr.join('\n')
 
     respond_to do |format|
       format.html # show.html.erb

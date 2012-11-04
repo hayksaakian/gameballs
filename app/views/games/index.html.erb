@@ -1,7 +1,13 @@
+
 <div style='width: 100%;' id="graphdiv"></div>
 <small>Numbers updated <%= time_ago_in_words(Viewstamp.last.created_at) %> ago</small>
+<form method='get' class='form-inline pull-right'>
+  <fieldset>
+      <%= select_tag 'days_back', options_for_select([ "3", "7", "30", '9001' ], params[:days_back]), :class => 'input-mini' %>
+    <button type="submit" class="btn">Days of Data</button>
+  </fieldset>
+</form>
 <script type="text/javascript">
-  var min_rows = '<%= @min_rows %>';
   var graph_data = '<%= @graph_data %>';
   g = new Dygraph(
     // containing div
@@ -34,7 +40,7 @@
 <tbody>
 <% @games.each do |game| %>
   <tr>
-    <td><%= game.name %></td>
+    <td><%= link_to game.name, game %></td>
     <% if game.viewstamps.any? %>
       <td><%= game.viewstamps.last.viewers %></td>
       <td><%= game.viewstamps.last.owned_viewers %></td>

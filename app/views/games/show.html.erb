@@ -1,3 +1,66 @@
-<%= @game.attributes.to_s %>
-<%= link_to 'Edit', edit_game_path(@game) %> |
+
+<h4><%= @game.name %></h4>
+<div style='width: 100%;' id="graphdiv"></div>
+<small>Numbers updated <%= time_ago_in_words(@game.viewstamps.last.created_at) %> ago</small> | 
+<small><%= @game.twitch_name %> on twitch and <%= @game.owned_name %> on own3d</small>
+<form method='get' class='form-inline pull-right'>
+	<fieldset>
+			<%= select_tag 'days_back', options_for_select([ "3", "7", "30", '9001' ], params[:days_back]), :class => 'input-mini' %>
+    <button type="submit" class="btn">Days of Data</button>
+	</fieldset>
+</form>
+<script type="text/javascript">
+  var graph_data = '<%= @graph_data %>';
+  g = new Dygraph(
+    // containing div
+    document.getElementById("graphdiv"),
+    // CSV or path to a CSV file.
+    graph_data,
+    {
+      rollPeriod: 1,
+      showRoller: false
+    }
+  );
+</script>
+
+<table class='table table-striped table-bordered table-hover table-condensed'>
+  <thead class='info'>
+    <tr>
+      <th>Viewstamp Time</th>
+      <th>Total Viewers</th>
+      <th>- just Own3d</th>
+      <th>- just Twitch</th>
+      <th>Total Channels</th>
+      <th>- just Own3d</th>
+      <th>- just Twitch</th>
+<!--       <th>Top Streamer</th>
+      <th>- stream title</th>
+      <th>- view count</th> -->
+    </tr>
+  </thead>
+<tbody>
+<% @viewstamps.order_by([:created_at, :desc]).limit(100).each do |vs| %>
+  <tr>
+    <td><%= time_tag vs.created_at %></td>
+    <td><%= vs.viewers %></td>
+    <td><%= vs.owned_viewers %></td>
+
+    <td><%= vs.twitch_viewers %></td>
+    <td><%= vs.channels %></td>
+    <td><%= vs.owned_channels %></td>
+
+    <td><%= vs.twitch_channels %></td>
+<!-- 		<td><%= 'top streamer' %></td>
+    <td><%= 'stream title' %></td>
+    <td><%= 'stream viewers' %></td> -->
+  </tr>
+<% end %>
+</tbody>
+</table>
+
+<br />
+
+
+<%#= @game.attributes.to_s %>
+<%#= link_to 'Edit', edit_game_path(@game) %> |
 <%= link_to 'Back', games_path %>
