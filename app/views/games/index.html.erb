@@ -3,7 +3,7 @@
 <small>Numbers updated <%= time_ago_in_words(Viewstamp.last.created_at) %> ago</small>
 <form method='get' class='form-inline pull-right'>
   <fieldset>
-      <%= select_tag 'days_back', options_for_select([ "3", "7", "30", '9001' ], params[:days_back]), :class => 'input-mini' %>
+      <%= select_tag 'days_back', options_for_select(["1", "3", "7", "30", '9001' ], params[:days_back]), :class => 'input-mini' %>
     <button type="submit" class="btn">Days of Data</button>
   </fieldset>
 </form>

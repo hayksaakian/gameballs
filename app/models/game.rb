@@ -25,10 +25,10 @@ class Game
       gm.current_channels = 0
       gm.save
     end
-  	guid = SecureRandom.uuid
-  	Game.get_twitch(guid)
+  	timestamp = Time.now
+  	Game.get_twitch(timestamp)
     puts 'done with twitch'
-  	Game.get_owned(guid)
+  	Game.get_owned(timestamp)
     puts 'done with own3d'
     vss = Viewstamp.where(:created_at.gte => 30.minutes.ago)
   	vss.each do |vs|
@@ -41,7 +41,7 @@ class Game
     puts 'totally done'
   end
   #both are class methods, not instance mathods
-  def self.get_twitch(timestamp_guid)
+  def self.get_twitch(timestamp)
   	url = URI.parse("https://api.twitch.tv/kraken/games/top?limit=100") 
   	http = Net::HTTP.new(url.host, url.port)
 		http.use_ssl = true
@@ -78,13 +78,13 @@ class Game
       if the_game.boxart_url == nil
         the_game.boxart_url = gm['game']['box']['medium']
       end
-  		vs = the_game.viewstamps.find_or_initialize_by(timestamp_guid: timestamp_guid)
+  		vs = the_game.viewstamps.find_or_initialize_by(timestamp: timestamp)
   		vs.viewers += viewers
   		vs.channels += channels
   		vs.twitch_viewers = viewers
   		vs.twitch_channels = channels
   		vs.save
-      the_game.last_update = vs.created_at
+      the_game.last_update = timestamp
       the_game.save
       if the_game.genres.any? == false and the_game.giantbomb_id != nil
         puts the_game.giantbomb_id
@@ -103,7 +103,7 @@ class Game
       end
   	end
   end
-  def self.get_owned(timestamp_guid)
+  def self.get_owned(timestamp)
   	url = URI.parse("http://api.own3d.tv/rest/live/list.json?limit=1000")
   	rsl = Net::HTTP.get(url)
   	live_streams = JSON.parse(rsl)
@@ -131,13 +131,13 @@ class Game
         if the_game.name == nil
           the_game.name = name
         end
-  	  	vs = the_game.viewstamps.find_or_initialize_by(timestamp_guid: timestamp_guid)
+  	  	vs = the_game.viewstamps.find_or_initialize_by(timestamp: timestamp)
     		vs.viewers += st['live_viewers'].to_i
     		vs.owned_viewers += st['live_viewers'].to_i
     		vs.owned_channels += 1
     		vs.channels += 1
   	  	vs.save
-        the_game.last_update = vs.created_at
+        the_game.last_update = timestamp
         the_game.save
       end
   	end

@@ -5,7 +5,7 @@
 <small><%= @game.twitch_name %> on twitch and <%= @game.owned_name %> on own3d</small>
 <form method='get' class='form-inline pull-right'>
 	<fieldset>
-			<%= select_tag 'days_back', options_for_select([ "3", "7", "30", '9001' ], params[:days_back]), :class => 'input-mini' %>
+			<%= select_tag 'days_back', options_for_select(["1", "3", "7", "30", '9001' ], params[:days_back]), :class => 'input-mini' %>
     <button type="submit" class="btn">Days of Data</button>
 	</fieldset>
 </form>
