@@ -5,9 +5,11 @@ require 'json'
 class Game
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Mongoid::Slug
   has_and_belongs_to_many :genres
   has_many :viewstamps, :dependent => :destroy
   field :name, :type => String
+  slug :name
   field :giantbomb_id, :type => String
   field :boxart_url, :type => String
   field :live, :type => String
@@ -28,8 +30,8 @@ class Game
   	timestamp = Time.now
   	Game.get_twitch(timestamp)
     puts 'done with twitch'
-  	Game.get_owned(timestamp)
-    puts 'done with own3d'
+  	# Game.get_owned(timestamp)
+   #  puts 'done with own3d'
     vss = Viewstamp.where(:created_at.gte => 30.minutes.ago)
   	vss.each do |vs|
   		vs.game.update_attribute(:current_viewers, vs.viewers)

@@ -6,6 +6,7 @@ gem 'thin'
 
 gem "mongoid", "~> 3.0.0"
 gem "mongo"
+gem 'mongoid_slug'
 #added to make it stop bitching:
 gem "bson_ext"
 
